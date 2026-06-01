@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>九州秋ツーリング 2026 — Google Maps リンク集</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, 'Hiragino Koto Mincho', 'Yu Gothic', sans-serif;
+    background: #f0f4f8;
+    color: #1a2744;
+    padding-bottom: 40px;
+  }
+  header {
+    background: #1a2744;
+    color: white;
+    padding: 20px 16px 16px;
+    text-align: center;
+  }
+  header h1 { font-size: 18px; margin-bottom: 6px; }
+  header p  { font-size: 12px; color: #aac0dd; }
+
+  .badges {
+    display: flex; flex-wrap: wrap; justify-content: center;
+    gap: 6px; margin-top: 12px;
+  }
+  .badge {
+    background: rgba(255,255,255,0.15);
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 11px;
+    color: #e0eaff;
+  }
+
+  /* Plan tabs */
+  .tabs {
+    display: flex;
+    position: sticky; top: 0; z-index: 10;
+    background: #1a2744;
+    border-bottom: 3px solid #e8622a;
+  }
+  .tab {
+    flex: 1; text-align: center;
+    padding: 10px 4px;
+    font-size: 13px; font-weight: bold;
+    color: #aac0dd;
+    cursor: pointer;
+    transition: all .2s;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -3px;
+  }
+  .tab.active       { color: white; border-bottom-color: #e8622a; }
+  .tab.active.planA { border-bottom-color: #e8622a; }
+  .tab.active.planB { border-bottom-color: #2d6bcd; }
+  .tab.active.planC { border-bottom-color: #2a9d5c; }
+
+  /* Plan panels */
+  .plan { display: none; padding: 14px 14px 0; }
+  .plan.active { display: block; }
+
+  .plan-header {
+    border-radius: 10px;
+    padding: 14px 16px 10px;
+    margin-bottom: 14px;
+    color: white;
+  }
+  .plan-header h2 { font-size: 16px; margin-bottom: 4px; }
+  .plan-header p  { font-size: 12px; opacity: .85; }
+  .planA .plan-header { background: #e8622a; }
+  .planB .plan-header { background: #2d6bcd; }
+  .planC .plan-header { background: #2a9d5c; }
+
+  /* Day cards */
+  .day-card {
+    background: white;
+    border-radius: 10px;
+    margin-bottom: 12px;
+    overflow: hidden;
+    box-shadow: 0 1px 6px rgba(0,0,0,.08);
+  }
+  .day-header {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 14px;
+    border-bottom: 1px solid #eee;
+  }
+  .day-num {
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: bold; font-size: 13px;
+    color: white; flex-shrink: 0;
+  }
+  .planA .day-num { background: #e8622a; }
+  .planB .day-num { background: #2d6bcd; }
+  .planC .day-num { background: #2a9d5c; }
+
+  .day-title { font-size: 13px; font-weight: bold; line-height: 1.4; }
+  .day-km    { font-size: 11px; color: #888; margin-top: 2px; }
+
+  .day-body  { padding: 10px 14px; }
+
+  .route-line {
+    font-size: 11px; color: #666;
+    background: #f8f9fb;
+    border-left: 3px solid #ddd;
+    padding: 6px 10px;
+    border-radius: 0 6px 6px 0;
+    margin-bottom: 10px;
+    line-height: 1.6;
+  }
+  .planA .route-line { border-left-color: #e8622a; }
+  .planB .route-line { border-left-color: #2d6bcd; }
+  .planC .route-line { border-left-color: #2a9d5c; }
+
+  /* Stop list */
+  .stop-list { list-style: none; margin-bottom: 10px; }
+  .stop-list li {
+    display: flex; gap: 8px; align-items: flex-start;
+    padding: 5px 0;
+    border-bottom: 1px solid #f3f3f3;
+    font-size: 12px;
+  }
+  .stop-list li:last-child { border-bottom: none; }
+  .stop-time  { flex-shrink: 0; width: 36px; font-weight: bold; color: #888; }
+  .stop-name  { font-weight: bold; color: #1a2744; min-width: 90px; }
+  .stop-note  { color: #777; font-size: 11px; line-height: 1.4; }
+
+  .gourmet-row {
+    background: #fffbf0;
+    border-radius: 6px;
+    padding: 6px 10px;
+    font-size: 11px;
+    color: #7a4a00;
+    margin-bottom: 10px;
+  }
+
+  /* Google Maps button */
+  .maps-btn {
+    display: flex; align-items: center; justify-content: center;
+    gap: 8px;
+    background: #4285f4;
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    padding: 11px 16px;
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 4px;
+    box-shadow: 0 2px 6px rgba(66,133,244,.3);
+    transition: opacity .15s;
+  }
+  .maps-btn:active { opacity: .8; }
+  .maps-btn svg { width: 20px; height: 20px; flex-shrink: 0; }
+
+  .maps-hint {
+    text-align: center; font-size: 10px; color: #aaa; margin-bottom: 6px;
+  }
+
+  /* Tips section */
+  .tips-section {
+    background: white;
+    border-radius: 10px;
+    margin: 0 14px 14px;
+    overflow: hidden;
+    box-shadow: 0 1px 6px rgba(0,0,0,.08);
+  }
+  .tips-section h3 {
+    background: #1a2744; color: white;
+    padding: 10px 14px; font-size: 13px;
+  }
+  .tip-row {
+    display: flex; gap: 10px; align-items: flex-start;
+    padding: 8px 14px;
+    border-bottom: 1px solid #f3f3f3;
+    font-size: 12px;
+  }
+  .tip-row:last-child { border-bottom: none; }
+  .tip-label { font-weight: bold; color: #1a2744; min-width: 60px; }
+  .tip-text  { color: #666; line-height: 1.5; }
+
+  /* Accommodation */
+  .acc-section {
+    background: white;
+    border-radius: 10px;
+    margin: 0 14px 20px;
+    overflow: hidden;
+    box-shadow: 0 1px 6px rgba(0,0,0,.08);
+  }
+  .acc-section h3 {
+    background: #1a2744; color: white;
+    padding: 10px 14px; font-size: 13px;
+  }
+  .acc-row {
+    display: flex; flex-direction: column;
+    padding: 10px 14px;
+    border-bottom: 1px solid #f3f3f3;
+  }
+  .acc-row:last-child { border-bottom: none; }
+  .acc-night { font-weight: bold; font-size: 11px; color: #888; margin-bottom: 2px; }
+  .acc-area  { font-weight: bold; font-size: 13px; color: #1a2744; margin-bottom: 2px; }
+  .acc-name  { font-size: 12px; color: #555; margin-bottom: 6px; }
+  .acc-link  {
+    display: inline-block;
+    background: #ff5a5f;
+    color: white;
+    text-decoration: none;
+    padding: 5px 14px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: bold;
+    width: fit-content;
+  }
+
+  .compare-section {
+    background: white;
+    border-radius: 10px;
+    margin: 14px;
+    overflow: hidden;
+    box-shadow: 0 1px 6px rgba(0,0,0,.08);
+  }
+  .compare-section h3 {
+    background: #1a2744; color: white;
+    padding: 10px 14px; font-size: 13px;
+  }
+  .compare-row {
+    display: flex;
+    border-bottom: 1px solid #f3f3f3;
+    font-size: 12px;
+  }
+  .compare-row:last-child { border-bottom: none; }
+  .compare-label { background: #f0f4f8; width: 80px; flex-shrink: 0; padding: 8px 10px; font-weight: bold; }
+  .compare-a { flex: 1; padding: 8px; border-right: 1px solid #f3f3f3; color: #e8622a; }
+  .compare-b { flex: 1; padding: 8px; border-right: 1px solid #f3f3f3; color: #2d6bcd; }
+  .compare-c { flex: 1; padding: 8px; color: #2a9d5c; }
+
+  footer {
+    text-align: center; font-size: 10px; color: #aaa;
+    padding: 10px 16px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🏍 九州秋ツーリング 2026</h1>
+  <p>Google Maps ルートリンク集  — LINEで共有OK</p>
+  <div class="badges">
+    <span class="badge">📅 10〜11月上旬</span>
+    <span class="badge">👥 4〜6名</span>
+    <span class="badge">🚢 沖縄⇄鹿児島フェリー</span>
+    <span class="badge">📍 4泊5日</span>
+  </div>
+</header>
+
+<!-- Plan comparison -->
+<div class="compare-section">
+  <h3>📊 3案 早見比較</h3>
+  <div class="compare-row">
+    <div class="compare-label"></div>
+    <div class="compare-a">🅐 走り重視</div>
+    <div class="compare-b">🅑 グルメ重視</div>
+    <div class="compare-c">🅒 バランス型</div>
+  </div>
+  <div class="compare-row">
+    <div class="compare-label">距離/日</div>
+    <div class="compare-a">約250km</div>
+    <div class="compare-b">約230km</div>
+    <div class="compare-c">約245km</div>
+  </div>
+  <div class="compare-row">
+    <div class="compare-label">長崎</div>
+    <div class="compare-a">西彼杵メイン</div>
+    <div class="compare-b">市内+西彼杵</div>
+    <div class="compare-c">市内観光+西彼杵</div>
+  </div>
+  <div class="compare-row">
+    <div class="compare-label">帰路</div>
+    <div class="compare-a">霧島スカイライン</div>
+    <div class="compare-b">球磨川・八代</div>
+    <div class="compare-c">霧島スカイライン</div>
+  </div>
+  <div class="compare-row">
+    <div class="compare-label">夫婦向け</div>
+    <div class="compare-a">△ ペース速め</div>
+    <div class="compare-b">◎ 余裕あり</div>
+    <div class="compare-c">◎ バランス最良</div>
+  </div>
+  <div class="compare-row">
+    <div class="compare-label">グルメ</div>
+    <div class="compare-a">★★★☆☆</div>
+    <div class="compare-b">★★★★★</div>
+    <div class="compare-c">★★★★☆</div>
+  </div>
+</div>
+
+<!-- TABS -->
+<div class="tabs">
+  <div class="tab planA active" onclick="showPlan('A')">🅐 走り重視</div>
+  <div class="tab planB"        onclick="showPlan('B')">🅑 グルメ重視</div>
+  <div class="tab planC"        onclick="showPlan('C')">🅒 バランス型</div>
+</div>
+
+<!-- ═══ PLAN A ══════════════════════════════════════════════════════ -->
+<div id="planA" class="plan planA active">
+  <div class="plan-header">
+    <h2>🏍 プランA — 走り重視ルート</h2>
+    <p>ワインディング最大化。西彼杵半島縦断・ミルクロード・霧島スカイラインをすべて制覇。</p>
+  </div>
+
+  <!-- Day 1 -->
+  <div class="day-card">
+    <div class="day-header">
+      <div class="day-num">Day<br>1</div>
+      <div>
+        <div class="day-title">鹿児島港 → 長島 → 天草五橋 → 鬼池 Ferry → 西彼杵半島</div>
+        <div class="day-km">約260km</div>
+      </div>
+    </div>
+    <div class="day-body">
+      <div class="route-line">R3南下 → 長島大橋 → R266パールライン → 鬼池港⛴口之津 → K34西彼杵</div>
+      <ul class="stop-list">
+        <li><span class="stop-time">11:30</span><span class="stop-name">長島 大陸市場食堂</span><span class="stop-note">ぶり王定食 ¥1,600〜。水曜定休注意</span></li>
+        <li><span class="stop-time">14:00</span><span class="stop-name">天草五橋 パールライン</span><span class="stop-note">R266の5橋ワインディング。海と島々の絶景</span></li>
+        <li><span class="stop-time">16:00</span><span class="stop-name">鬼池港 フェリー</span><span class="stop-note">鬼池→口之津 約30分。バイク込約¥1,500。乗船前満タン</span></li>
+        <li><span class="stop-time">18:30</span><span class="stop-name">西彼杵半島（泊）</span><span class="stop-note">翌日の半島縦断に備え早めに就寝</span></li>
+      </ul>
+      <div class="gourmet-row">🍽 ぶり刺し・ぶりしゃぶ（長島）/ タコ・天草大王（天草）</div>
+      <a class="maps-btn" href="https://www.google.com/maps/dir/鹿児島港,鹿児島市/大陸市場食堂,長島町/天草五橋/鬼池港/33.003969,129.543559" target="_blank">
+        <svg viewBox="0 0 24 24" fill="white"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+        Day1 ルートをGoogle Mapsで開く
+      </a>
+      <div class="maps-hint">タップするとGoogle Mapsアプリが開きます</div>
+    </div>
+  </div>
+
+  <!-- Day 2 -->
+  <div class="day-card">
+    <div class="day-header">
+      <div class="day-num">Day<br>2</div>
+      <div>
+        <div class="day-title">西彼杵半島 全縦断 → やまなみハイウェイ → 黒川温泉</div>
+        <div class="day-km">約270km（最長日）</div>
+      </div>
+    </div>
+    <div class="day-body">
+      <div class="route-line">K34南端→北端（海沿い約130km）→ R202 → やまなみHW → R442 → 黒川温泉</div>
+      <ul class="stop-list">
+        <li><span class="stop-time">07:00</span><span class="stop-name">西彼杵半島 早朝スタート</span><span class="stop-note">朝日の大村湾を眺めながら南端から北端へ縦断</span></li>
+        <li><span class="stop-time">12:00</span><span class="stop-name">佐世保 or 松浦 昼食</span><span class="stop-note">佐世保バーガー or 松浦の海鮮ランチ。GSも必ず補充</span></li>
+        <li><span class="stop-time">15:00</span><span class="stop-name">やまなみハイウェイ</span><span class="stop-note">阿蘇外輪山を一望。雄大なロードで走り疲れが吹き飛ぶ</span></li>
+        <li><span class="stop-time">17:30</span><span class="stop-name">黒川温泉（泊）</span><span class="stop-note">民泊「凪」or「飯」。紅葉×露天温泉。早め予約必須</span></li>
+      </ul>
+      <div class="gourmet-row">🍽 佐世保バーガー（佐世保）/ 地鶏・山菜（黒川温泉周辺）</div>
+      <a class="maps-btn" href="https://www.google.com/maps/dir/33.003969,129.543559/佐世保市/やまなみハイウェイ/黒川温泉,南小国町" target="_blank">
+        <svg viewBox="0 0 24 24" fill="white"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+        Day2 ルートをGoogle Mapsで開く
+      </a>
+      <div class="maps-hint">タップするとGoogle Mapsアプリが開きます</div>
+    </div>
+  </div>
+
+  <!-- Day 3 -->
+  <div class="day-card">
+    <div class="day-header">
+      <div class="day-num">Day<br>3</div>
+      <div>
+        <div class="day-title">大観峰（雲海）→ ミルクロード → R265 五木村 → えびの高原</div>
+        <div class="day-km">約240km</div>
+      </div>
+    </div>
+    <div class="day-body">
+      <div class="route-line">黒川温泉 → 大観峰 → ミルクロード全線 → 阿蘇市 → R265（五木）→ R221 → えびの高原</div>
+      <ul class="stop-list">
+        <li><span class="stop-time">06:15</span><span class="stop-name">大観峰 雲海ビュー</span><span class="stop-note">10〜11月の早朝は雲海率高し。防寒必須（5℃以下も）</span></li>
+        <li><span class="stop-time">08:00</span><span class="stop-name">ミルクロード 全線制覇</span><span class="stop-note">阿蘇カルデラ外輪山 約30km。ライダーの聖地</span></li>
+        <li><span class="stop-time">12:00</span><span class="stop-name">阿蘇市内 赤牛ランチ</span><span class="stop-note">阿蘇赤牛丼 or 馬刺し定食</span></li>
+        <li><span class="stop-time">14:00</span><span class="stop-name">R265 五木・五家荘</span><span class="stop-note">険道注意。大型バイクは事前確認を。知る人ぞ知る絶景峡谷</span></li>
+        <li><span class="stop-time">17:00</span><span class="stop-name">えびの高原（泊）</span><span class="stop-note">まるしっぽ邸★5.0。BBQ・満天の星空</span></li>
+      </ul>
+      <div class="gourmet-row">🍽 阿蘇赤牛丼・馬刺し（阿蘇）/ 鮎料理・球磨焼酎（人吉エリア）</div>
+      <a class="maps-btn" href="https://www.google.com/maps/dir/黒川温泉,南小国町/大観峰,阿蘇市/32.97,131.03/阿蘇市/えびの高原" target="_blank">
+        <svg viewBox="0 0 24 24" fill="white"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+        Day3 ルートをGoogle Mapsで開く
+      </a>
+      <div class="maps-hint">タップするとGoogle Mapsアプリが開きます</div>
+    </div>
+  </div>
+
+  <!-- Day 4 -->
+  <div class="day-card">
+    <div class="day-header">
+      <div class="day-num">Day<br>4</div>
+      <div>
+        <div class="day-title">霧島スカイライン → 霧島神宮 → R223 → 鹿児島港</div>
+        <div class="day-km">約140km（余裕の最終日）</div>
+      </div>
+    </div>
+    <div class="day-body">
+      <div class="route-line">えびの高原 → 霧島スカイライン → 高千穂河原 → 霧島神宮 → R223 → 鹿児島港</div>
+      <ul class="stop-list">
+        <li><span class="stop-time">08:30</span><span class="stop-name">霧島スカイライン 紅葉</span><span class="stop-note">10〜11月紅葉ピーク。山上GSなし。えびので満タンに</span></li>
+        <li><span class="stop-time">10:00</span><span class="stop-name">高千穂河原 展望台</span><span class="stop-note">御鉢の噴煙と草紅葉。記念撮影スポット</span></li>
+        <li><span class="stop-time">11:30</span><span class="stop-name">霧島神宮 ランチ</span><span class="stop-note">地鶏の炭火焼きが社周辺に集結。ラストランチ</span></li>
+        <li><span class="stop-time">14:00</span><span class="stop-name">R223 → 桜島眺望ロード</span><span class="stop-note">錦江湾越しに桜島。4日間のフィナーレ</span></li>
+        <li><span class="stop-time">16:30</span><span class="stop-name">鹿児島港 フェリー乗り場</span><span class="stop-note">出港2時間前には到着を。那覇行き夜行フェリー</span></li>
+      </ul>
+      <div class="gourmet-row">🍽 地鶏炭火焼き（霧島）/ 黒豚とんかつ・薩摩揚げ（鹿児島）</div>
+      <a class="maps-btn" href="https://www.google.com/maps/dir/えびの高原/霧島スカイライン/高千穂河原/霧島神宮/鹿児島港" target="_blank">
+        <svg viewBox="0 0 24 24" fill="white"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+        Day4 ルートをGoogle Mapsで開く
+      </a>
+      <div class="maps-hint">タップするとGoogle Mapsアプリが開きます</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ PLAN B ══════════════════════════════════════════════════════ -->
+<div id="planB" class="plan planB">
+  <div class="plan-header">
+    <h2>🍽 プランB — グルメ重視ルート</h2>
+    <p>長崎ちゃんぽん・阿蘇赤牛・人吉鮎・球磨焼酎。九州の食を全力で満喫しながら走る。</p>
+  </div>
+
+  <div class="day-card">
+    <div class="day-header">
+      <div class="day-num">Day<br>1</div>
+      <div>
+        <div class="day-title">鹿児島港 → 長島 → 天草 → フェリー → 雲仙温泉</div>
+        <div class="day-km">約230km</div>
+      </div>
+    </div>
+    <div class="day-body">
+      <div class="route-line">R3 → 長島 → R266天草 → 鬼池港⛴口之津 → R57 → 雲仙</div>
+      <ul class="stop-list">
+        <li><span class="stop-time">11:30</span><span class="stop-name">長島 大陸市場食堂</span><span class="stop-note">ぶり王定食。グルメプランの幕開けにふさわしい一品</span></li>
+        <li><span class="stop-time">14:30</span><span class="stop-name">天草 海鮮 道の駅</span><span class="stop-note">タコ・車エビ・天草大王。天草五橋も走行</span></li>
+        <li><span class="stop-time">16:30</span><span class="stop-name">鬼池港 フェリー</span><span class="stop-note">鬼池→口之津。約30分</span></li>
+        <li><span class="stop-time">19:00</span><span class="stop-name">雲仙温泉（泊）</span><span class="stop-note">地獄谷の硫黄温泉。島原の郷土料理「具雑煮」を夕食に</span></li>
+      </ul>
+      <div class="gourmet-row">🍽 ぶり刺し（長島）/ タコ・車エビ（天草）/ 具雑煮・温泉卵（雲仙）</div>
+      <a class="maps-btn" href="https://www.google.com/maps/dir/鹿児島港/大陸市場食堂,長島町/天草五橋/鬼池港/雲仙温泉" target="_blank">
+        <svg viewBox="0 0 24 24" fill="white"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+        Day1 ルートをGoogle Mapsで開く
+      </a>
+      <div class="maps-hint">タップするとGoogle Mapsアプリが開きます</div>
+    </div>
+  </div>
+
+  <div class="day-card">
+    <div class="day-header">
+      <div class="day-num">Day<br>2</div>
+      <div>
+        <div class="day-title">雲仙 → 島原半島 → 長崎市 → 西彼杵半島 → 黒川温泉</div>
+        <div class="day-km">約260km</div>
+      </div>
+    </div>
+    <div class="day-body">
+      <div class="route-line">雲仙 → R57島原半島 → 長崎市内（ちゃんぽん）→ K34西彼杵 → やまなみ → 黒川温泉</div>
+      <ul class="stop-list">
+        <li><span class="stop-time">09:00</span><span class="stop-name">島原半島 朝ドライブ</span><span class="stop-note">R57で有明海を眺めながら半島周回</span></li>
+        <li><span class="stop-time">12:00</span><span class="stop-name">長崎市内 ちゃんぽん</span><span class="stop-note">老舗「江山楼」or「四海楼」で本場長崎ちゃんぽん</span></li>
+        <li><span class="stop-time">14:30</span><span class="stop-name">西彼杵半島 ダイジェスト</span><span class="stop-note">北部を中心に海沿いを快走。北緯33度展望台へ</span></li>
+        <li><span class="stop-time">17:30</span><span class="stop-name">黒川温泉（泊）</span><span class="stop-note">一棟貸し温泉×紅葉×地鶏料理で至福の夜</span></li>
+      </ul>
+      <div class="gourmet-row">🍽 具雑煮（島原）/ 長崎ちゃんぽん・皿うどん（長崎）/ 地鶏（黒川）</div>
+      <a class="maps-btn" href="https://www.google.com/maps/dir/雲仙温泉/島原市/長崎市/33.003969,129.543559/黒川温泉,南小国町" target="_blank">
+        <svg viewBox="0 0 24 24" fill="white"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+        Day2 ルートをGoogle Mapsで開く
+      </a>
+      <div class="maps-hint">タップするとGoogle Mapsアプリが開きます</div>
+    </div>
+  </div>
+
+  <div class="day-card">
+    <div class="day-header">
+      <div class="day-num">Day<br>3</div>
+      <div>
+        <div class="day-title">大観峰 → ミルクロード → 阿蘇（赤牛）→ 人吉（鮎）</div>
+        <div class="day-km">約250km</div>
+      </div>
+    </div>
+    <div class="day-body">
+      <div class="route-line">黒川温泉 → 大観峰 → ミルクロード → 阿蘇市 → R443 → 熊本市 → R219 → 人吉</div>
+      <ul class="stop-list">
+        <li><span class="stop-time">06:30</span><span class="stop-name">大観峰 雲海</span><span class="stop-note">早朝の雲海。帰りに阿蘇牛乳コーヒーを</span></li>
+        <li><span class="stop-time">08:30</span><span class="stop-name">ミルクロード 全線</span><span class="stop-note">ライダー聖地。阿蘇赤牛の放牧地を走り抜ける</span></li>
+        <li><span class="stop-time">12:00</span><span class="stop-name">阿蘇市内 赤牛丼</span><span class="stop-note">阿蘇赤牛丼 or 馬刺し盛り合わせ。ボリューム満点</span></li>
+        <li><span class="stop-time">18:00</span><span class="stop-name">人吉（泊）</span><span class="stop-note">球磨川沿いの鮎宿 or 焼酎蔵の夕食。Airbnb安価エリア</span></li>
+      </ul>
+      <div class="gourmet-row">🍽 阿蘇赤牛丼（阿蘇）/ 馬刺し（熊本）/ 鮎の塩焼き・球磨焼酎（人吉）</div>
+      <a class="maps-btn" href="https://www.google.com/maps/dir/黒川温泉,南小国町/大観峰,阿蘇市/阿蘇市/熊本市/人吉市" target="_blank">
+        <svg viewBox="0 0 24 24" fill="white"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+        Day3 ルートをGoogle Mapsで開く
+      </a>
+      <div class="maps-hint">タップするとGoogle Mapsアプリが開きます</div>
+    </div>
+  </div>
+
+  <div class="day-card">
+    <div class="day-header">
+      <div class="day-num">Day<br>4</div>
+      <div>
+        <div class="day-title">球磨川沿い R219 → 八代（海鮮）→ 鹿児島港</div>
+        <div class="day-km">約200km（余裕の最終日）</div>
+      </div>
+    </div>
+    <div class="day-body">
+      <div class="route-line">人吉 → R219球磨川沿い → 八代市内 → 南九州道 → R3 → 鹿児島港</div>
+      <ul class="stop-list">
+        <li><span class="stop-time">08:30</span><span class="stop-name">球磨川沿い R219</span><span class="stop-note">川霧の中を走る秘境ロード。紅葉シーズンは格別</span></li>
+        <li><span class="stop-time">11:00</span><span class="stop-name">八代市内 海鮮ランチ</span><span class="stop-note">車エビ・だご汁・八代ラーメン。シーフード系が豊富</span></li>
+        <li><span class="stop-time">15:30</span><span class="stop-name">鹿児島 黒豚 夕食</span><span class="stop-note">鹿児島黒豚とんかつ or 薩摩揚げを港近くで食べ納め</span></li>
+        <li><span class="stop-time">17:00</span><span class="stop-name">鹿児島港 フェリー乗り場</span><span class="stop-note">グルメ完全制覇。那覇行き夜行フェリー乗船</span></li>
+      </ul>
+      <div class="gourmet-row">🍽 球磨川の鮎（朝）/ 八代 車エビ（昼）/ 鹿児島黒豚・薩摩揚げ（夕）</div>
+      <a class="maps-btn" href="https://www.google.com/maps/dir/人吉市/八代市/鹿児島港" target="_blank">
+        <svg viewBox="0 0 24 24" fill="white"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+        Day4 ルートをGoogle Mapsで開く
+      </a>
+      <div class="maps-hint">タップするとGoogle Mapsアプリが開きます</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ PLAN C ══════════════════════════════════════════════════════ -->
+<div id="planC" class="plan planC">
+  <div class="plan-header">
+    <h2>🍁 プランC — 景色・観光バランス型</h2>
+    <p>走り・グルメ・長崎観光・温泉・紅葉をすべて楽しむ。夫婦参加にも最適な余裕設計。</p>
+  </div>
+
+  <div class="day-card">
+    <div class="day-header">
+      <div class="day-num">Day<br>1</div>
+      <div>
+        <div class="day-title">鹿児島港 → 長島 → 天草五橋 → フェリー → 雲仙</div>
+        <div class="day-km">約240km</div>
+      </div>
+    </div>
+    <div class="day-body">
+      <div class="route-line">R3南下 → 長島 → R266天草パールライン → 鬼池港⛴口之津 → 島原 → R57 → 雲仙</div>
+      <ul class="stop-list">
+        <li><span class="stop-time">11:30</span><span class="stop-name">長島 ぶり昼食</span><span class="stop-note">ぶり王定食。まずはこれを食べないとツーが始まらない</span></li>
+        <li><span class="stop-time">14:00</span><span class="stop-name">天草パールライン</span><span class="stop-note">R266ワインディング＆絶景橋梁。走りつつ景色も楽しむ</span></li>
+        <li><span class="stop-time">16:00</span><span class="stop-name">鬼池港 → 口之津 フェリー</span><span class="stop-note">約30分の短いフェリー旅。島原の山々が近づいてくる</span></li>
+        <li><span class="stop-time">18:00</span><span class="stop-name">雲仙温泉（泊）</span><span class="stop-note">地獄谷の硫黄温泉。夜は雲仙の郷土料理で英気を養う</span></li>
+      </ul>
+      <div class="gourmet-row">🍽 ぶり（長島）/ タコ・車エビ（天草）/ 具雑煮・温泉卵（雲仙）</div>
+      <a class="maps-btn" href="https://www.google.com/maps/dir/鹿児島港/大陸市場食堂,長島町/天草五橋/鬼池港/雲仙温泉" target="_blank">
+        <svg viewBox="0 0 24 24" fill="white"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+        Day1 ルートをGoogle Mapsで開く
+      </a>
+      <div class="maps-hint">タップするとGoogle Mapsアプリが開きます</div>
+    </div>
+  </div>
+
+  <div class="day-card">
+    <div class="day-header">
+      <div class="day-num">Day<br>2</div>
+      <div>
+        <div class="day-title">雲仙 → 長崎市（観光）→ 西彼杵半島 → 黒川温泉</div>
+        <div class="day-km">約255km</div>
+      </div>
+    </div>
+    <div class="day-body">
+      <div class="route-line">雲仙 → R57 → 長崎市内（観光2h）→ K34西彼杵半島縦断 → やまなみ → 黒川温泉</div>
+      <ul class="stop-list">
+        <li><span class="stop-time">09:00</span><span class="stop-name">長崎市内 午前観光</span><span class="stop-note">大浦天主堂・グラバー園・出島。ちゃんぽん昼食</span></li>
+        <li><span class="stop-time">13:00</span><span class="stop-name">西彼杵半島へ</span><span class="stop-note">午後から走りモード。海沿いのK34へ</span></li>
+        <li><span class="stop-time">14:30</span><span class="stop-name">西彼杵半島 ハイライト区間</span><span class="stop-note">北緯33度展望台から大村湾と五島列島を一望</span></li>
+        <li><span class="stop-time">18:00</span><span class="stop-name">黒川温泉（泊）</span><span class="stop-note">紅葉の黒川温泉。秘湯の一棟貸しでリラックス</span></li>
+      </ul>
+      <div class="gourmet-row">🍽 長崎ちゃんぽん・皿うどん・角煮まん（長崎）/ 地鶏・山里料理（黒川）</div>
+      <a class="maps-btn" href="https://www.google.com/maps/dir/雲仙温泉/長崎市/33.003969,129.543559/黒川温泉,南小国町" target="_blank">
+        <svg viewBox="0 0 24 24" fill="white"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+        Day2 ルートをGoogle Mapsで開く
+      </a>
+      <div class="maps-hint">タップするとGoogle Mapsアプリが開きます</div>
+    </div>
+  </div>
+
+  <div class="day-card">
+    <div class="day-header">
+      <div class="day-num">Day<br>3</div>
+      <div>
+        <div class="day-title">大観峰（雲海）→ ミルクロード → 阿蘇 → えびの高原</div>
+        <div class="day-km">約245km</div>
+      </div>
+    </div>
+    <div class="day-body">
+      <div class="route-line">黒川 → 大観峰 → ミルクロード → 阿蘇市 → R265五木 → R221 → えびの高原</div>
+      <ul class="stop-list">
+        <li><span class="stop-time">06:30</span><span class="stop-name">大観峰 雲海＋朝日</span><span class="stop-note">今ツーリングのベストショットを狙う。防寒ウェア必須</span></li>
+        <li><span class="stop-time">08:30</span><span class="stop-name">ミルクロード 全線</span><span class="stop-note">阿蘇外輪山の絶景ロード30km制覇</span></li>
+        <li><span class="stop-time">12:00</span><span class="stop-name">阿蘇 赤牛ランチ</span><span class="stop-note">赤牛丼 or ハンバーグ。地元食堂で本物の味</span></li>
+        <li><span class="stop-time">14:30</span><span class="stop-name">R265 五木谷ルート</span><span class="stop-note">峡谷と紅葉の絶景ルート。険道あり大型は要確認</span></li>
+        <li><span class="stop-time">17:00</span><span class="stop-name">えびの高原（泊）</span><span class="stop-note">満天の星空。BBQ付き一棟貸し「まるしっぽ邸」★5.0</span></li>
+      </ul>
+      <div class="gourmet-row">🍽 阿蘇赤牛丼（昼）/ 球磨地鶏の炭火焼き（夕）</div>
+      <a class="maps-btn" href="https://www.google.com/maps/dir/黒川温泉,南小国町/大観峰,阿蘇市/阿蘇市/えびの高原" target="_blank">
+        <svg viewBox="0 0 24 24" fill="white"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+        Day3 ルートをGoogle Mapsで開く
+      </a>
+      <div class="maps-hint">タップするとGoogle Mapsアプリが開きます</div>
+    </div>
+  </div>
+
+  <div class="day-card">
+    <div class="day-header">
+      <div class="day-num">Day<br>4</div>
+      <div>
+        <div class="day-title">霧島スカイライン → 霧島神宮 → 鹿児島港</div>
+        <div class="day-km">約140km（余裕の最終日）</div>
+      </div>
+    </div>
+    <div class="day-body">
+      <div class="route-line">えびの高原 → 霧島スカイライン → 高千穂河原 → 霧島神宮 → K55桜島眺望 → 鹿児島港</div>
+      <ul class="stop-list">
+        <li><span class="stop-time">09:00</span><span class="stop-name">霧島スカイライン 紅葉</span><span class="stop-note">10〜11月は紅葉最盛期。えびのを出る前に満タンに</span></li>
+        <li><span class="stop-time">10:30</span><span class="stop-name">高千穂河原</span><span class="stop-note">御鉢の噴煙と草紅葉。九州神話の聖地</span></li>
+        <li><span class="stop-time">12:00</span><span class="stop-name">霧島神宮 ランチ</span><span class="stop-note">地鶏の炭火焼きを満喫。参道グルメを堪能</span></li>
+        <li><span class="stop-time">14:30</span><span class="stop-name">K55 桜島眺望ロード</span><span class="stop-note">錦江湾越しに桜島。4日間の旅のフィナーレ</span></li>
+        <li><span class="stop-time">16:30</span><span class="stop-name">鹿児島港 フェリー乗り場</span><span class="stop-note">那覇行き夜行フェリー乗船。お疲れ様でした！</span></li>
+      </ul>
+      <div class="gourmet-row">🍽 地鶏炭火焼き・霧島神宮参道（霧島）/ 黒豚とんかつ（鹿児島）</div>
+      <a class="maps-btn" href="https://www.google.com/maps/dir/えびの高原/霧島スカイライン/霧島神宮/鹿児島港" target="_blank">
+        <svg viewBox="0 0 24 24" fill="white"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+        Day4 ルートをGoogle Mapsで開く
+      </a>
+      <div class="maps-hint">タップするとGoogle Mapsアプリが開きます</div>
+    </div>
+  </div>
+</div>
+
+<!-- Tips （全プラン共通） -->
+<div class="tips-section">
+  <h3>⚠️ 注意事項 & 実用Tips（全プラン共通）</h3>
+  <div class="tip-row"><span class="tip-label">⛽ 燃料</span><span class="tip-text">天草・西彼杵・霧島スカイラインはGSが少ない。フェリー乗船前・えびの高原出発前に必ず満タン。山上はGSなし。</span></div>
+  <div class="tip-row"><span class="tip-label">🌡 防寒</span><span class="tip-text">阿蘇・えびの高原は10〜11月で5〜10℃以下も。防寒ジャケット＋インナー必須。早朝は特に冷え込む。</span></div>
+  <div class="tip-row"><span class="tip-label">🛣 R265</span><span class="tip-text">五木村区間は険道（幅員狭し）。大型バイクは事前確認を推奨。天候次第では迂回も検討を。</span></div>
+  <div class="tip-row"><span class="tip-label">🏠 宿泊</span><span class="tip-text">黒川温泉は紅葉シーズンに激混み。8月に人数確定次第、即予約推奨。一棟貸しで個室2部屋以上の物件を。</span></div>
+  <div class="tip-row"><span class="tip-label">🌀 台風</span><span class="tip-text">10月以降は落ち着くが前日確認を習慣に。予備日や迂回ルートを頭に入れておく。</span></div>
+</div>
+
+<!-- Accommodation -->
+<div class="acc-section">
+  <h3>🏠 宿泊候補（Airbnb / Booking）</h3>
+  <div class="acc-row">
+    <div class="acc-night">1泊目</div>
+    <div class="acc-area">西彼杵半島 or 雲仙エリア（長崎県）</div>
+    <div class="acc-name">Airbnb で「西彼杵郡・6名・一棟貸し」検索</div>
+    <a class="acc-link" href="https://www.airbnb.jp/s/西彼杵郡/homes?adults=6&room_types[]=Entire+home" target="_blank">Airbnbで検索</a>
+  </div>
+  <div class="acc-row">
+    <div class="acc-night">2泊目</div>
+    <div class="acc-area">黒川温泉エリア（熊本県小国町）</div>
+    <div class="acc-name">民泊「凪」 — 温泉付き一棟貸し</div>
+    <a class="acc-link" href="https://www.airbnb.com/h/okukurokawaonsen-ran" target="_blank">Airbnbで見る</a>
+  </div>
+  <div class="acc-row">
+    <div class="acc-night">3泊目</div>
+    <div class="acc-area">えびの高原 or 人吉エリア（宮崎・熊本）</div>
+    <div class="acc-name">まるしっぽ邸 ★5.0  BBQ・全設備完備</div>
+    <a class="acc-link" href="https://www.booking.com/Share-IQ002E" target="_blank">Bookingで見る</a>
+  </div>
+</div>
+
+<footer>
+  九州秋ツーリング 2026  |  作成：Claude (Anthropic)<br>
+  情報は変更になる場合があります。事前に現地情報をご確認ください。
+</footer>
+
+<script>
+function showPlan(id) {
+  // Update tabs
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.plan').forEach(p => p.classList.remove('active'));
+  // Find and activate correct tab
+  document.querySelectorAll('.tab').forEach(t => {
+    if (t.getAttribute('onclick').includes("'" + id + "'")) {
+      t.classList.add('active');
+    }
+  });
+  document.getElementById('plan' + id).classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+</body>
+</html>
